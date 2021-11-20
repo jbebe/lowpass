@@ -1,7 +1,7 @@
-import { createHash } from 'crypto'
+import NaCl from 'tweetnacl'
+import { SHA256, enc as Encoding } from 'crypto-js'
 
 export function getHash(input: string) {
-  const hasher = createHash('sha256')
-  hasher.update(input)
-  return hasher.digest('hex')
+  const hash = SHA256(input).toString(Encoding.Hex);
+  return hash
 }
