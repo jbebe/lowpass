@@ -1,8 +1,11 @@
 {
+  "name": "lowpass-webapp",
+  "version": "1.0.0",
   "scripts": {
     "build": "webpack --mode development",
     "dev": "webpack serve --mode development",
-    "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\" --quiet --fix"
+    "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\" --quiet --fix",
+    "test": "jest"
   },
   "dependencies": {
     "@types/react": "^17.0.35",
@@ -14,6 +17,9 @@
     "@babel/core": "^7.16.0",
     "@babel/preset-env": "^7.16.4",
     "@babel/preset-react": "^7.16.0",
+    "@testing-library/react": "^12.1.2",
+    "@types/jest": "^27.0.3",
+    "@types/react-test-renderer": "^17.0.1",
     "@types/webpack-env": "^1.16.3",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
@@ -26,11 +32,14 @@
     "eslint-plugin-react": "^7.27.1",
     "html-loader": "^3.0.1",
     "html-webpack-plugin": "^5.5.0",
+    "jest": "^27.3.1",
     "prettier": "^2.4.1",
     "react-hot-loader": "^4.13.0",
+    "react-test-renderer": "^17.0.2",
     "sass": "^1.43.4",
     "sass-loader": "^12.3.0",
     "style-loader": "^3.3.1",
+    "ts-jest": "^27.0.7",
     "ts-loader": "^9.2.6",
     "typescript": "^4.5.2",
     "webpack": "^5.64.1",

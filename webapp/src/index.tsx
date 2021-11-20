@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-import App from './App'
+import App from './app/app'
 ReactDOM.render(<App />, document.getElementById('app'))
 
 // hot reloading. It works by replacing a module of the application
