@@ -1,0 +1,18 @@
+{
+	"folders": [
+		{
+			"path": "..\\webapp"
+		},
+		{
+			"path": "..\\crypto"
+		}
+	],
+	"settings": {
+		"editor.tabSize": 2,
+		"files.eol": "\n",
+		"files.exclude": {
+		"**/.git": false
+		},
+		"jest.autoRun": {"watch": false, "onSave": "test-file"}
+	}
+}
