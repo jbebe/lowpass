@@ -1,18 +1,17 @@
-import { encryptAsymmetric } from '../src/crypto-wrapper/asymmetric'
-import { getRandomBytes } from '../src/crypto-wrapper/random'
-import { encryptObjAsymmetric } from '../src/helpers/asymmetric'
-import { createUser } from '../src/test-helpers/user'
+import { StoreService } from '../src/services/store-service'
+import { MockStorage } from '../src/test-helpers/storage'
+import { createTestUser, createTestSecret } from '../src/test-helpers/user'
 
-test('Alice sends data to Bob with public key encryption', () => {
-  const alice = createUser()
-  const bob = createUser()
-  const message = {
-    prop: 'value',
-  }
-  const nonce = getRandomBytes(24)
+test('User lists all secrets, creates a new secret, lists all secrets again, accesses secret', () => {
+  const user = createTestUser()
+  const secret = createTestSecret()
+  const storeService = new StoreService(user, new MockStorage())
 
-  const encryptedMessage = encryptObjAsymmetric(message, nonce, bob.crypto.asym.publicKey, alice.crypto.asym.secretKey)
+  let secrets = storeService.getSecrets()
+  expect(secrets.length).toEqual(0)
 
-  
-  // expect(result).toEqual('b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9')
+  storeService.createSecret(secret)
+  secrets = storeService.getSecrets()
+  expect(secrets.length).toEqual(1)
+  expect(secrets[0]).toEqual(secret)
 })

@@ -4,5 +4,6 @@ export type User = {
   email: string
   crypto: {
     asym: AsymmetricKeyPair
+    sym: Uint8Array
   }
 }
