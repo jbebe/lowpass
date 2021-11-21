@@ -5,14 +5,23 @@
 		},
 		{
 			"path": "..\\crypto"
+		},
+		{
+			"path": "..\\docs"
 		}
 	],
 	"settings": {
 		"editor.tabSize": 2,
 		"files.eol": "\n",
 		"files.exclude": {
-		"**/.git": false
+			"**/.git": false
 		},
-		"jest.autoRun": {"watch": false, "onSave": "test-file"}
+		"typescript.preferences.quoteStyle": "single",
+		"typescript.format.semicolons": "remove",
+		"jest.autoRun": {"watch": false, "onSave": "test-file"},
+		"jest.jestCommandLine": "npm run test --",
+		"jest.disabledWorkspaceFolders": ["docs"],
+		"eslint.alwaysShowStatus": true,
+        "eslint.format.enable": true
 	}
 }

@@ -14,7 +14,6 @@ module.exports = {
   rules: {
     // Place to specify ESLint rules. Can be used to overwrite rules specified from the extended configs
     // e.g. "@typescript-eslint/explicit-function-return-type": "off",
-    'array-element-newline': ['error', 'consistent'],
-    'arrow-parens': 'as-needed'
+    'array-element-newline': ['error', 'consistent']
   },
 }
