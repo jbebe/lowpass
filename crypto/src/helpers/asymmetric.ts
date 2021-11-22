@@ -4,7 +4,7 @@ import { AsymmetricNonceLength } from '../crypto-wrapper/utils'
 import { decodeJson, encodeJson } from './object'
 import { decodeString, encodeString } from './string'
 
-type EncryptedObject = {
+export type EncryptedObject = {
   encryptedData: Uint8Array
   nonce: Uint8Array
 }

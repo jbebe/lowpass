@@ -1,5 +1,10 @@
 import NaCl from 'tweetnacl'
 
+export type UserSymKey = {
+  salt: Uint8Array
+  key: Uint8Array
+}
+
 function validate(nonce: Uint8Array, key: Uint8Array) {
   if (nonce.byteLength !== NaCl.secretbox.nonceLength) {
     throw new RangeError(`Nonce must be ${NaCl.secretbox.nonceLength} bytes long`)

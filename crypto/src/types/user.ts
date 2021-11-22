@@ -1,9 +1,11 @@
-import { AsymmetricKeyPair } from '../crypto-wrapper/asymmetric'
+import { UserPubKey } from '../crypto-wrapper/asymmetric'
+import { UserSymKey } from '../crypto-wrapper/symmetric'
 
 export type User = {
   email: string
+  id: string
   crypto: {
-    asym: AsymmetricKeyPair
-    sym: Uint8Array
+    asym: UserPubKey
+    sym: UserSymKey
   }
 }

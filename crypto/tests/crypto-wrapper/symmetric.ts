@@ -5,8 +5,8 @@ import { createTestSecret, createTestUser } from '../../src/test-helpers/user'
 test('User encrypts secret with symmetric key and decrypts it', () => {
   const user = createTestUser()
   const secret = createTestSecret()
-  const encryptedObj = encryptObjSymmetric(secret, user.crypto.sym)
-  const decryptedObj = decryptObjSymmetric(encryptedObj, user.crypto.sym)
+  const encryptedObj = encryptObjSymmetric(secret, user.crypto.sym.key)
+  const decryptedObj = decryptObjSymmetric(encryptedObj, user.crypto.sym.key)
 
   expect(decryptedObj).toEqual(secret)
 })
@@ -14,10 +14,10 @@ test('User encrypts secret with symmetric key and decrypts it', () => {
 test('Alice sends data to Bob with public key encryption and Bob tries to read it but the nonce has changed', () => {
   const user = createTestUser()
   const secret = createTestSecret()
-  const encryptedObj = encryptObjSymmetric(secret, user.crypto.sym)
+  const encryptedObj = encryptObjSymmetric(secret, user.crypto.sym.key)
   encryptedObj.nonce[0] = encryptedObj.nonce[0] ^ 0xff
 
-  expect(() => decryptObjSymmetric(encryptedObj, user.crypto.sym)).toThrow(
+  expect(() => decryptObjSymmetric(encryptedObj, user.crypto.sym.key)).toThrow(
     new TypeError('Unable to decrypt secret with given parameters'),
   )
 })

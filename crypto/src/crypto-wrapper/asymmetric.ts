@@ -1,6 +1,6 @@
 import NaCl from 'tweetnacl'
 
-export type AsymmetricKeyPair = {
+export type UserPubKey = {
   publicKey: Uint8Array
   secretKey: Uint8Array
 }
@@ -8,7 +8,7 @@ export type AsymmetricKeyPair = {
 /**
  * Optional secret key must be 64 bytes long
  */
-export function createAsymmetricKeyPair(secretKey?: Uint8Array): AsymmetricKeyPair {
+export function createAsymmetricKeyPair(secretKey?: Uint8Array): UserPubKey {
   let keyPair: NaCl.BoxKeyPair
   if (secretKey) {
     if (secretKey.byteLength !== NaCl.sign.secretKeyLength) {

@@ -1,10 +1,10 @@
-import { Secret } from '../types/secret'
+import { SecretPackage } from '../types/package'
 import { IStorage } from '../types/storage'
 
 export class MockStorage implements IStorage {
   private db: { [collection: string]: unknown[] } = {}
 
-  put(collection: string, secret: Secret): void {
+  put(collection: string, secret: SecretPackage): void {
     this.db[collection] ??= []
     this.db[collection].push(secret)
   }
