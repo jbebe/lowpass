@@ -1,5 +1,5 @@
+import { range } from '../common/iterable'
 import { getRandomBytes } from '../crypto-wrapper/random'
-import { range } from './iterable'
 
 const lowercaseAlphaNum = String.fromCharCode(...[...range(48, 57), ...range(97, 122)])
 

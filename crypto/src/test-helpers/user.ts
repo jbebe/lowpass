@@ -1,10 +1,10 @@
 import { createAsymmetricKeyPair } from '../crypto-wrapper/asymmetric'
 import { getRandomString } from '../helpers/random'
-import { User } from '../types/user'
+import { DetailedUser } from '../types/user'
 import { Secret, Note } from '../types/secret'
 import { createSymmetricKeyFromPassword } from '../crypto-wrapper/random'
 
-export function createTestUser(): User {
+export function createTestUser(): DetailedUser {
   const email = `user${getRandomString(5)}@lowpass.local`
   const password = getRandomString(5)
   const id = getRandomString(32)
@@ -25,6 +25,7 @@ export function createTestSecret() {
   }
   const secret: Secret = {
     type: 'Note',
+    id: getRandomString(5),
     value: secretValue,
     group: getRandomString(5),
   }

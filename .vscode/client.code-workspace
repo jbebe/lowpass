@@ -22,6 +22,12 @@
 		"jest.jestCommandLine": "npm run test --",
 		"jest.disabledWorkspaceFolders": ["docs"],
 		"eslint.alwaysShowStatus": true,
-        "eslint.format.enable": true
+		"eslint.format.enable": true,
+		"typescript.format.insertSpaceAfterOpeningAndBeforeClosingEmptyBraces": true,
+		"typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
+		"javascript.format.insertSpaceAfterOpeningAndBeforeClosingEmptyBraces": true,
+		"javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
+		"editor.snippetSuggestions": "bottom",
+		"editor.suggestSelection": "first"
 	}
 }

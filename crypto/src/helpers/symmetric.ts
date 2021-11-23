@@ -1,8 +1,8 @@
 import { getRandomBytes } from '../crypto-wrapper/random'
 import { decryptSymmetric, encryptSymmetric } from '../crypto-wrapper/symmetric'
 import { SymmetricNonceLength } from '../crypto-wrapper/utils'
-import { decodeJson, encodeJson } from './object'
-import { decodeString, encodeString } from './string'
+import { decodeString, encodeString } from '../common/string'
+import { decodeJson, encodeJson } from '../common/object'
 
 type EncryptedObject = {
   encryptedData: Uint8Array

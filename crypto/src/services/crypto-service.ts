@@ -1,32 +1,73 @@
-import { createSymmetricKey } from '../crypto-wrapper/random'
+import { createAsymmetricKeyPair } from '../crypto-wrapper/asymmetric'
 import {
-  decryptBytesSymmetric,
-  decryptObjSymmetric,
-  encryptBytesSymmetric,
-  encryptObjSymmetric,
-} from '../helpers/symmetric'
-import { SecretPackage } from '../types/package'
+  createSymmetricKey,
+  createSymmetricKeyFromPassword,
+  deriveSymmetricKeyFromPassword,
+} from '../crypto-wrapper/random'
+import { decryptCryptoData, decryptSecret } from '../helpers/crypto-misc'
+import { getRandomString } from '../helpers/random'
+import { decryptBytesSymmetric, encryptBytesSymmetric, encryptObjSymmetric } from '../helpers/symmetric'
+import { KeyTable, EncryptedSecret } from '../types/package'
 import { Secret } from '../types/secret'
-import { User } from '../types/user'
+import { CryptoData, DetailedUser, EncryptedUser, LoginData } from '../types/user'
 
 export class CryptoService {
-  constructor(private user: User) {}
+  public createUser(loginData: LoginData): { encryptedUser: EncryptedUser; detailedUser: DetailedUser } {
+    const { key, salt } = createSymmetricKeyFromPassword(loginData.password)
+    const { publicKey, secretKey } = createAsymmetricKeyPair()
+    const userId = getRandomString(10)
+    const cryptoData: CryptoData = {
+      asym: { publicKey, secretKey },
+      sym: { key, salt },
+    }
 
-  public createPackage(secret: Secret): SecretPackage {
+    const encryptedUser: EncryptedUser = {
+      id: userId,
+      email: loginData.email,
+      passwordSalt: salt,
+      crypto: encryptObjSymmetric(cryptoData, key),
+    }
+    const detailedUser: DetailedUser = {
+      id: userId,
+      email: loginData.email,
+      crypto: cryptoData,
+    }
+    return { encryptedUser, detailedUser }
+  }
+
+  public login(loginData: LoginData, encryptedUser: EncryptedUser): DetailedUser {
+    const key = deriveSymmetricKeyFromPassword(loginData.password, encryptedUser.passwordSalt)
+    const crypto = decryptCryptoData(encryptedUser.crypto, key)
+    const detailedUser: DetailedUser = {
+      id: encryptedUser.id,
+      email: encryptedUser.email,
+      crypto,
+    }
+    return detailedUser
+  }
+
+  public createPackage(secret: Secret, user: DetailedUser): EncryptedSecret {
     const secretKey = createSymmetricKey()
     const encSecret = encryptObjSymmetric(secret, secretKey)
-    const encSecretKey = encryptBytesSymmetric(secretKey, this.user.crypto.sym.key)
-    const keyTable = { [this.user.id]: encSecretKey }
+    const encSecretKey = encryptBytesSymmetric(secretKey, user.crypto.sym.key)
+    const keyTable: KeyTable = {
+      member: {
+        [user.id]: encSecretKey,
+      },
+      invited: {},
+      removed: {},
+    }
     return {
+      secretId: secret.id,
       secret: encSecret,
       keyTable,
     }
   }
 
-  public decryptPackage(pkg: SecretPackage) {
-    const encSecretKey = pkg.keyTable[this.user.id]
-    const secretKey = decryptBytesSymmetric(encSecretKey, this.user.crypto.sym.key)
-    const secret = decryptObjSymmetric(pkg.secret, secretKey) as Secret
+  public decryptPackage(pkg: EncryptedSecret, user: DetailedUser) {
+    const encSecretKey = pkg.keyTable.member[user.id]
+    const secretKey = decryptBytesSymmetric(encSecretKey, user.crypto.sym.key)
+    const secret = decryptSecret(pkg.secret, secretKey)
     return secret
   }
 }

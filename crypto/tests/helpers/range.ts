@@ -1,4 +1,4 @@
-import { range } from '../../src/helpers/iterable'
+import { range } from '../../src/common/iterable'
 
 test('range: [0,0] gives 0', () => {
   const result = range(0, 0)

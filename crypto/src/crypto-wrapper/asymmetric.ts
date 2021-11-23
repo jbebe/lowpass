@@ -6,15 +6,16 @@ export type UserPubKey = {
 }
 
 /**
- * Optional secret key must be 64 bytes long
+ * Create asymmetric keypair
+ * Optionally created from asymmetric secret key
  */
-export function createAsymmetricKeyPair(secretKey?: Uint8Array): UserPubKey {
+export function createAsymmetricKeyPair(asymSecretKey?: Uint8Array): UserPubKey {
   let keyPair: NaCl.BoxKeyPair
-  if (secretKey) {
-    if (secretKey.byteLength !== NaCl.sign.secretKeyLength) {
+  if (asymSecretKey) {
+    if (asymSecretKey.byteLength !== NaCl.sign.secretKeyLength) {
       throw new RangeError('Secret key length must be 64 bytes')
     }
-    keyPair = NaCl.box.keyPair.fromSecretKey(secretKey)
+    keyPair = NaCl.box.keyPair.fromSecretKey(asymSecretKey)
   } else {
     keyPair = NaCl.box.keyPair()
   }

@@ -20,6 +20,7 @@ export type BankCard = SecretValueBase & {
 }
 
 export type Secret = {
+  id: string
   type: SecretType
   value: Password | Note | BankCard
   group: string

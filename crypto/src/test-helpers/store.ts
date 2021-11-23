@@ -1,24 +1,24 @@
-import { CryptoService } from '../services/crypto-service'
+import { AccountService } from '../services/account-service'
 import { StoreService } from '../services/store-service'
 import { Secret } from '../types/secret'
 import { User } from '../types/user'
-import { MockStorage } from './storage'
 import { createTestSecret, createTestUser } from './user'
 
-export type TestStorePack = {
+export type TestUserEnvironment = {
   user: User
-  secret?: Secret
+  secret: Secret
   storeService: StoreService
 }
-
-export function createTestStore(withSecret?: boolean): TestStorePack {
+/*
+export function createTestUserEnvironment(storage?: IStorage): TestUserEnvironment {
   const user = createTestUser()
-  const storeService = new StoreService(user, new MockStorage(), new CryptoService(user))
-  let secret: Secret | undefined
-  if (withSecret) {
-    secret = createTestSecret()
-    storeService.createSecret(secret)
+  if (!storage) {
+    storage = new MockStorage()
   }
+  storage.put(CollectionType.User, user.id, user)
+  const storeService = new StoreService(user, storage, new AccountService(user, storage))
+  const secret = createTestSecret()
+  storeService.createSecretAsync(secret)
 
   return {
     user,
@@ -26,3 +26,4 @@ export function createTestStore(withSecret?: boolean): TestStorePack {
     storeService,
   }
 }
+*/
