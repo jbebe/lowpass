@@ -1,6 +1,8 @@
+// TODO: this file needs to be moved to the wrapper as it contains NaCl implicitly
+
 import NaCl from 'tweetnacl'
 import { encodeString } from '../common/string'
-import { UserSymKey } from './symmetric'
+import { UserSymKey } from '../types/user'
 
 export function getRandomBytes(length: number): Uint8Array {
   return NaCl.randomBytes(length)

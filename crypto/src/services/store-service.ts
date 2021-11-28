@@ -1,7 +1,9 @@
+import { createMap } from '../common/object'
+import { FlatObject } from '../common/type'
 import { IApiService } from '../types/api'
-import { EncryptedSecret } from '../types/package'
+import { EncryptedSecret, SecretPackage } from '../types/package'
 import { Secret } from '../types/secret'
-import { DetailedUser } from '../types/user'
+import { DetailedUser, User } from '../types/user'
 import { CryptoService } from './crypto-service'
 
 export class StoreService {
@@ -9,44 +11,21 @@ export class StoreService {
 
   public async createSecretAsync(secret: Secret, user: DetailedUser): Promise<EncryptedSecret> {
     const secretPackage = this.cryptoService.createPackage(secret, user)
-    this.apiService.createSecretAsync(secretPackage)
+    this.apiService.createSecretAsync(secretPackage, user)
     return secretPackage
   }
-  /*
 
-  public getSecrets(): Secret[] {
-    const packages = this.storage.getAll(CollectionType.Secret, '') as EncryptedSecret[]
-    return packages.map(pkg => this.crypto.decryptPackage(pkg))
+  public async inviteAsync(encryptedSecret: EncryptedSecret, invited: User, owner: DetailedUser): Promise<void> {
+    encryptedSecret = this.cryptoService.invite(encryptedSecret, invited, owner)
+    this.apiService.inviteAsync(encryptedSecret, invited)
   }
 
-  
-
-  public getMembers(secret: Secret): FlatObject<User> {
-    const pkg = this.storage.get(CollectionType.Secret, secret.id) as EncryptedSecret
-    const memberIds = Object.keys(pkg.keyTable.member)
-    return createMap(
-      memberIds.map(id => this.accountService.getUser(id)),
-      user => user.id,
-    )
+  public async getSecretsAsync(owner: DetailedUser): Promise<FlatObject<SecretPackage>> {
+    const encSecs = await this.apiService.getSecretsAsync(owner)
+    const packages = encSecs.map(encSec => ({
+      secret: this.cryptoService.decryptPackage(encSec, owner),
+      encryptedSecret: encSec,
+    }))
+    return createMap(packages, pkg => pkg.secret.id)
   }
-
-  public invite(newUser: User, secret: Secret): void {
-    // we should probably move this whole section to the crypto service
-    const pkg = this.storage.get(CollectionType.Secret, secret.id) as EncryptedSecret
-    if (newUser.id in pkg.keyTable.member) {
-      throw new Error('User already member of the secret')
-    }
-    if (newUser.id in pkg.keyTable.invited) {
-      throw new Error('User already invited to secret')
-    }
-    const encSecretKey = pkg.keyTable.member[this.user.id]
-    const secretKey = decryptBytesSymmetric(encSecretKey, this.user.crypto.sym.key)
-    const encSecretKeyWithNewUserPubKey = encryptBytesAsymmetric(
-      secretKey,
-      newUser.crypto.asym.publicKey,
-      this.user.crypto.asym.secretKey,
-    )
-    pkg.keyTable.invited[newUser.id] = encSecretKeyWithNewUserPubKey
-    this.storage.put(CollectionType.Secret, pkg.secretId, pkg)
-  }*/
 }

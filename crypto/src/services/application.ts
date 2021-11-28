@@ -1,7 +1,7 @@
 import { FlatObject } from '../common/type'
 import { EncryptedSecret, SecretPackage } from '../types/package'
-import { Secret } from '../types/secret'
-import { DetailedUser, LoginData } from '../types/user'
+import { Secret, UserSecretPair } from '../types/secret'
+import { DetailedUser, LoginData, User } from '../types/user'
 import { AccountService } from './account-service'
 import { StoreService } from './store-service'
 
@@ -11,15 +11,17 @@ export type ApplicationServices = {
 }
 
 export class Application {
-  private user: DetailedUser
+  private _user: DetailedUser
   private secrets: FlatObject<SecretPackage>
+  private invites: FlatObject<EncryptedSecret>
 
   private accountService: AccountService
   private storeService: StoreService
 
   constructor(user: DetailedUser, state: ApplicationServices) {
-    this.user = user
+    this._user = user
     this.secrets = {}
+    this.invites = {}
 
     this.accountService = state.accountService
     this.storeService = state.storeService
@@ -37,12 +39,32 @@ export class Application {
 
   public async createSecretAsync(secret: Secret) {
     this.validateState()
-    const encSec = await this.storeService.createSecretAsync(secret, this.user)
+    const encSec = await this.storeService.createSecretAsync(secret, this._user)
     this.updateSecrets(secret, encSec)
   }
 
-  public getSecrets(): FlatObject<SecretPackage> {
+  public async getSecretsAsync(): Promise<FlatObject<SecretPackage>> {
+    this.secrets = await this.storeService.getSecretsAsync(this._user)
     return this.secrets
+  }
+
+  public get user() {
+    return this._user
+  }
+
+  public async getUserAsync(email: string): Promise<User> {
+    const user = await this.accountService.getUserAsync(email)
+    return user
+  }
+
+  public async inviteAsync(secretId: string, user: User): Promise<void> {
+    const { encryptedSecret } = this.secrets[secretId]
+    this.storeService.inviteAsync(encryptedSecret, user, this._user)
+  }
+
+  public async getInvitesAsync(): Promise<FlatObject<EncryptedSecret>> {
+    await Promise.resolve()
+    return this.invites
   }
 
   //
@@ -54,7 +76,7 @@ export class Application {
   }
 
   private validateState() {
-    if (!this.user) {
+    if (!this._user) {
       throw new Error('User is not logged in!')
     }
   }

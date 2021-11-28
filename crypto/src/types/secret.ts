@@ -1,3 +1,8 @@
+export type UserSecretPair = {
+  userId: string
+  secretId: string
+}
+
 export type SecretType = 'Password' | 'Note' | 'BankCard'
 
 type SecretValueBase = {

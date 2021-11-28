@@ -1,7 +1,6 @@
 import { FlatObject } from '../common/type'
-import { EncryptedObject } from '../helpers/asymmetric'
 import { Secret } from './secret'
-import { User } from './user'
+import { EncryptedObject, User } from './user'
 
 export type KeyTable = {
   member: FlatObject<EncryptedObject>

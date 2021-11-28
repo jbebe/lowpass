@@ -1,10 +1,13 @@
+import { CryptoFunctions } from '../crypto-wrapper/crypto-functions'
 import { Secret } from '../types/secret'
-import { CryptoData } from '../types/user'
-import { EncryptedObject } from './asymmetric'
-import { decryptObjSymmetric } from './symmetric'
+import { CryptoData, EncryptedObject } from '../types/user'
 
-export function decryptCryptoData(cryptoData: EncryptedObject, key: Uint8Array): CryptoData {
-  const pojo = decryptObjSymmetric(cryptoData, key) as CryptoData
+export function decryptCryptoData(
+  cryptoFns: CryptoFunctions,
+  cryptoData: EncryptedObject,
+  key: Uint8Array,
+): CryptoData {
+  const pojo = cryptoFns.decryptObjSymmetric(cryptoData, key) as CryptoData
   return {
     ...pojo,
     asym: {
@@ -18,7 +21,7 @@ export function decryptCryptoData(cryptoData: EncryptedObject, key: Uint8Array):
   }
 }
 
-export function decryptSecret(cryptoData: EncryptedObject, key: Uint8Array): Secret {
-  const pojo = decryptObjSymmetric(cryptoData, key) as Secret
+export function decryptSecret(cryptoFns: CryptoFunctions, cryptoData: EncryptedObject, key: Uint8Array): Secret {
+  const pojo = cryptoFns.decryptObjSymmetric(cryptoData, key) as Secret
   return pojo
 }

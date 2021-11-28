@@ -29,5 +29,19 @@
 		"javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
 		"editor.snippetSuggestions": "bottom",
 		"editor.suggestSelection": "first"
+	},
+	"tasks": {
+		"version": "2.0.0",
+		"tasks": [
+			{
+				"label": "Check TypeScript project for errors",
+				"command": "tsc",
+				"args": ["-p", "."],
+				"problemMatcher": "$tsc",
+				"presentation": {
+					"reveal": "silent"
+				}
+		}
+		]
 	}
 }

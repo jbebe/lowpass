@@ -1,16 +1,34 @@
-import { UserPubKey } from '../crypto-wrapper/asymmetric'
-import { UserSymKey } from '../crypto-wrapper/symmetric'
-import { EncryptedObject } from '../helpers/asymmetric'
+export type LoginData = {
+  email: string
+  password: string
+}
+
+export type UserSymKey = {
+  salt: Uint8Array
+  key: Uint8Array
+}
+
+export type UserPubKey = {
+  publicKey: Uint8Array
+  secretKey: Uint8Array
+}
+
+export type EncryptedObject = {
+  encryptedData: Uint8Array
+  nonce: Uint8Array
+}
+
+export type PublicCrypto = {
+  asym: {
+    publicKey: Uint8Array
+  }
+}
 
 // User object that represents the others
 export type User = {
   email: string
   id: string
-  crypto: {
-    asym: {
-      publicKey: Uint8Array
-    }
-  }
+  crypto: PublicCrypto
 }
 
 // User object that belongs to me before login
@@ -18,7 +36,8 @@ export type EncryptedUser = {
   email: string
   id: string
   passwordSalt: Uint8Array
-  crypto: EncryptedObject
+  crypto: PublicCrypto
+  encrypted: EncryptedObject
 }
 
 // User object that belongs to me and accessible after login
@@ -29,9 +48,4 @@ export type DetailedUser = User & {
 export type CryptoData = {
   asym: UserPubKey
   sym: UserSymKey
-}
-
-export type LoginData = {
-  email: string
-  password: string
 }
