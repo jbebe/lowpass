@@ -49,3 +49,8 @@ export type CryptoData = {
   asym: UserPubKey
   sym: UserSymKey
 }
+
+export type UserQuery = {
+  id?: string
+  email?: string
+}

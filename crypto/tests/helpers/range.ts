@@ -20,6 +20,10 @@ test('range: [10, 12] gives 10,11,12', () => {
   expect(result).toEqual([10, 11, 12])
 })
 
+test('range: [11,10 gives exception', () => {
+  expect(() => range(11, 10)).toThrow(new RangeError('Negative length is invalid'))
+})
+
 test('range: 0 gives empty array', () => {
   const result = range(0)
   expect(result).toEqual([])

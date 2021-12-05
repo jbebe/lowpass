@@ -94,4 +94,17 @@ export class CryptoService {
     encSec.keyTable.invited[invited.id] = encSecretKeyWithNewUserPubKey
     return encSec
   }
+
+  public acceptInvite(secret: EncryptedSecret, invitee: DetailedUser, inviter: User): EncryptedSecret {
+    const invitation = secret.keyTable.invited[invitee.id]
+    delete secret.keyTable.invited[invitee.id]
+    const secretKey = this.cryptoFns.decryptBytesAsymmetric(
+      invitation,
+      inviter.crypto.asym.publicKey,
+      invitee.crypto.asym.secretKey,
+    )
+    const encSecretKey = this.cryptoFns.encryptBytesSymmetric(secretKey, invitee.crypto.sym.key)
+    secret.keyTable.member[invitee.id] = encSecretKey
+    return secret
+  }
 }

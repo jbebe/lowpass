@@ -32,30 +32,47 @@ test('Full test', async () => {
   const app1 = await createUserAsync()
 
   // Load secrets
-  let secrets = Object.values(await app1.getSecretsAsync())
-  expect(secrets.length).toBe(0)
+  let secretsApp1 = Object.values(await app1.getSecretsAsync())
+  expect(secretsApp1.length).toBe(0)
 
   // Create secret x2
-  const secret = createTestSecret()
-  await app1.createSecretAsync(secret)
-  const secret2 = createTestSecret()
-  await app1.createSecretAsync(secret2)
+  const secretOnly1App1 = createTestSecret()
+  await app1.createSecretAsync(secretOnly1App1)
+  const secretOnly2App1 = createTestSecret()
+  await app1.createSecretAsync(secretOnly2App1)
 
   // Get all secrets
-  secrets = Object.values(await app1.getSecretsAsync())
-  expect(secrets.length).toBe(2)
-  expect(secrets[0].secret).toEqual(secret)
-  expect(secrets[1].secret).toEqual(secret2)
+  secretsApp1 = Object.values(await app1.getSecretsAsync())
+  expect(secretsApp1.length).toBe(2)
+  const secret1App1 = secretsApp1[0]
+  expect(secretsApp1[0].secret).toEqual(secretOnly1App1)
+  expect(secretsApp1[1].secret).toEqual(secretOnly2App1)
 
   // Create another user
   const app2 = await createUserAsync()
 
   // Invite new user to secret
-  const user2 = await app1.getUserAsync(app2.user.email)
+  const user2 = await app1.getUserAsync({ email: app2.user.email })
   expect(user2.id).toBe(app2.user.id)
-  await app1.inviteAsync(secret.id, user2)
+  await app1.inviteAsync(secretOnly1App1.id, user2)
 
-  const invites = await app2.getInvitesAsync()
-  expect(Object.values(invites).length).toBe(1)
-  //await app2.acceptInviteAsync(invite)
+  // Check for invite
+  const invitesMap = await app2.getInvitesAsync()
+  const invites = Object.values(invitesMap)
+  expect(invites.length).toBe(1)
+  const [invite] = invites
+
+  // Accept and access it
+  await app2.acceptInviteAsync(invite)
+  const secretsApp2Map = await app2.getSecretsAsync()
+  const secretsApp2 = Object.values(secretsApp2Map)
+  expect(secretsApp2.length).toBe(1)
+  const [secret1App2] = secretsApp2
+  expect(secret1App2.secret).toEqual(secretOnly1App1)
+  expect(secret1App2.encryptedSecret.secret).toEqual(secret1App1.encryptedSecret.secret)
+  expect(secret1App2.encryptedSecret.secretId).toEqual(secret1App1.encryptedSecret.secretId)
+  expect(secret1App2.encryptedSecret.keyTable.invited).toEqual({})
+  expect(secret1App2.encryptedSecret.keyTable.removed).toEqual({})
+  expect(Object.keys(secret1App2.encryptedSecret.keyTable.member)).toContain(app1.user.id)
+  expect(Object.keys(secret1App2.encryptedSecret.keyTable.member)).toContain(app2.user.id)
 })

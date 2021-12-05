@@ -1,7 +1,7 @@
 import { FlatObject } from '../common/type'
-import { EncryptedSecret, SecretPackage } from '../types/package'
-import { Secret, UserSecretPair } from '../types/secret'
-import { DetailedUser, LoginData, User } from '../types/user'
+import { SecretPackage } from '../types/package'
+import { Secret, SecretInvite } from '../types/secret'
+import { DetailedUser, LoginData, User, UserQuery } from '../types/user'
 import { AccountService } from './account-service'
 import { StoreService } from './store-service'
 
@@ -13,7 +13,7 @@ export type ApplicationServices = {
 export class Application {
   private _user: DetailedUser
   private secrets: FlatObject<SecretPackage>
-  private invites: FlatObject<EncryptedSecret>
+  private invites: SecretInvite[]
 
   private accountService: AccountService
   private storeService: StoreService
@@ -21,7 +21,7 @@ export class Application {
   constructor(user: DetailedUser, state: ApplicationServices) {
     this._user = user
     this.secrets = {}
-    this.invites = {}
+    this.invites = []
 
     this.accountService = state.accountService
     this.storeService = state.storeService
@@ -38,13 +38,11 @@ export class Application {
   }
 
   public async createSecretAsync(secret: Secret) {
-    this.validateState()
-    const encSec = await this.storeService.createSecretAsync(secret, this._user)
-    this.updateSecrets(secret, encSec)
+    await this.storeService.createSecretAsync(secret, this._user)
   }
 
   public async getSecretsAsync(): Promise<FlatObject<SecretPackage>> {
-    this.secrets = await this.storeService.getSecretsAsync(this._user)
+    this.secrets = await this.storeService.getSecretsAsync(this.user)
     return this.secrets
   }
 
@@ -52,32 +50,23 @@ export class Application {
     return this._user
   }
 
-  public async getUserAsync(email: string): Promise<User> {
-    const user = await this.accountService.getUserAsync(email)
+  public async getUserAsync(query: UserQuery): Promise<User> {
+    const user = await this.accountService.getUserByEmailAsync(query)
     return user
   }
 
-  public async inviteAsync(secretId: string, user: User): Promise<void> {
+  public async inviteAsync(secretId: string, invitee: User): Promise<void> {
     const { encryptedSecret } = this.secrets[secretId]
-    this.storeService.inviteAsync(encryptedSecret, user, this._user)
+    this.storeService.inviteAsync(encryptedSecret, invitee, this.user)
   }
 
-  public async getInvitesAsync(): Promise<FlatObject<EncryptedSecret>> {
-    await Promise.resolve()
+  public async getInvitesAsync(): Promise<SecretInvite[]> {
+    this.invites = await this.storeService.getIvitesAsync(this.user)
     return this.invites
   }
 
-  //
-  // Internal methods
-  //
-
-  private updateSecrets(secret: Secret, encryptedSecret: EncryptedSecret) {
-    this.secrets[secret.id] = { secret, encryptedSecret }
-  }
-
-  private validateState() {
-    if (!this._user) {
-      throw new Error('User is not logged in!')
-    }
+  public async acceptInviteAsync(secretInvite: SecretInvite): Promise<void> {
+    const inviter = await this.getUserAsync({ id: secretInvite.inviterId })
+    await this.storeService.acceptInviteAsync(secretInvite.secretId, this.user, inviter)
   }
 }

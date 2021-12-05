@@ -2,7 +2,7 @@ import { createMap } from '../common/object'
 import { FlatObject } from '../common/type'
 import { IApiService } from '../types/api'
 import { EncryptedSecret, SecretPackage } from '../types/package'
-import { Secret } from '../types/secret'
+import { Secret, SecretInvite } from '../types/secret'
 import { DetailedUser, User } from '../types/user'
 import { CryptoService } from './crypto-service'
 
@@ -15,9 +15,13 @@ export class StoreService {
     return secretPackage
   }
 
-  public async inviteAsync(encryptedSecret: EncryptedSecret, invited: User, owner: DetailedUser): Promise<void> {
-    encryptedSecret = this.cryptoService.invite(encryptedSecret, invited, owner)
-    this.apiService.inviteAsync(encryptedSecret, invited)
+  public async inviteAsync(encryptedSecret: EncryptedSecret, invitee: User, owner: DetailedUser): Promise<void> {
+    encryptedSecret = this.cryptoService.invite(encryptedSecret, invitee, owner)
+    this.apiService.inviteAsync(encryptedSecret, invitee, owner)
+  }
+
+  public async getIvitesAsync(owner: DetailedUser): Promise<SecretInvite[]> {
+    return await this.apiService.getInvitesAsync(owner)
   }
 
   public async getSecretsAsync(owner: DetailedUser): Promise<FlatObject<SecretPackage>> {
@@ -27,5 +31,11 @@ export class StoreService {
       encryptedSecret: encSec,
     }))
     return createMap(packages, pkg => pkg.secret.id)
+  }
+
+  public async acceptInviteAsync(secretId: string, owner: DetailedUser, inviter: User): Promise<void> {
+    let secret = await this.apiService.getSecretAsync(secretId, owner.id)
+    secret = this.cryptoService.acceptInvite(secret, owner, inviter)
+    await this.apiService.acceptInviteAsync(secret, owner)
   }
 }

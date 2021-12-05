@@ -54,6 +54,20 @@ const parameterizedTests = (cryptoFunctions: CryptoFunctions) => {
       new TypeError('Secret key must be 32 bytes long'),
     )
   })
+
+  test('Create asymmetric keypair with given secret key', () => {
+    const secretKey = getRandomBytes(32)
+    const keyPair = cryptoFunctions.createAsymmetricKeyPair(secretKey)
+    expect(keyPair.publicKey.byteLength).toBe(32)
+    expect(keyPair.secretKey.byteLength).toBe(32)
+  })
+
+  test('Create asymmetric keypair with given secret key', () => {
+    const secretKey = getRandomBytes(31)
+    expect(() => cryptoFunctions.createAsymmetricKeyPair(secretKey)).toThrow(
+      new TypeError('Secret key must be 32 bytes long'),
+    )
+  })
 }
 
 describe('Test asymmetric encryption of NaCl and Mock', () => {

@@ -20,8 +20,8 @@ export class NaClCryptoWrapper implements IBaseCryptoWrapper {
   public createAsymmetricKeyPair(asymSecretKey?: Uint8Array): UserPubKey {
     let keyPair: NaCl.BoxKeyPair
     if (asymSecretKey) {
-      if (asymSecretKey.byteLength !== NaCl.sign.secretKeyLength) {
-        throw new RangeError('Secret key length must be 64 bytes')
+      if (asymSecretKey.byteLength !== NaCl.box.secretKeyLength) {
+        throw new RangeError(`Secret key must be ${NaCl.box.secretKeyLength} bytes long`)
       }
       keyPair = NaCl.box.keyPair.fromSecretKey(asymSecretKey)
     } else {

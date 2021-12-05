@@ -3,6 +3,12 @@ export type UserSecretPair = {
   secretId: string
 }
 
+export type SecretInvite = {
+  inviteeId: string
+  secretId: string
+  inviterId: string
+}
+
 export type SecretType = 'Password' | 'Note' | 'BankCard'
 
 type SecretValueBase = {

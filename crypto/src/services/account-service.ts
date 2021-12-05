@@ -1,5 +1,5 @@
 import { IApiService } from '../types/api'
-import { DetailedUser, LoginData, User } from '../types/user'
+import { DetailedUser, LoginData, User, UserQuery } from '../types/user'
 import { CryptoService } from './crypto-service'
 
 export class AccountService {
@@ -17,7 +17,7 @@ export class AccountService {
     return detailedUser
   }
 
-  public async getUserAsync(email: string): Promise<User> {
-    return await this.apiService.getUserAsync(email)
+  public async getUserByEmailAsync(query: UserQuery): Promise<User> {
+    return await this.apiService.getUserAsync(query)
   }
 }

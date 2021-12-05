@@ -24,9 +24,6 @@ export function range(a: number, b?: number): number[] {
   if (length < 0) {
     throw new RangeError('Negative length is invalid')
   }
-  if (from > to) {
-    throw new RangeError(`'from' must be lower or equal to 'to'`)
-  }
 
   // generate array
   const arr = new Array(length)
