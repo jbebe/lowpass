@@ -1,11 +1,5 @@
 import { CryptoFunctions } from '../crypto-wrapper/crypto-functions'
-import {
-  createSymmetricKey,
-  createSymmetricKeyFromPassword,
-  deriveSymmetricKeyFromPassword,
-} from '../crypto-wrapper/random'
-import { decryptCryptoData, decryptSecret } from '../helpers/crypto-misc'
-import { getRandomString } from '../helpers/random'
+import { decryptCryptoData, decryptSecret } from '../crypto-wrapper/crypto-misc'
 import { KeyTable, EncryptedSecret } from '../types/package'
 import { Secret } from '../types/secret'
 import { CryptoData, DetailedUser, EncryptedUser, LoginData, User } from '../types/user'
@@ -14,9 +8,9 @@ export class CryptoService {
   constructor(private cryptoFns: CryptoFunctions) {}
 
   public createUser(loginData: LoginData): { encryptedUser: EncryptedUser; detailedUser: DetailedUser } {
-    const { key, salt } = createSymmetricKeyFromPassword(loginData.password)
+    const { key, salt } = this.cryptoFns.createSymmetricKeyFromPassword(loginData.password)
     const { publicKey, secretKey } = this.cryptoFns.createAsymmetricKeyPair()
-    const userId = getRandomString(10)
+    const userId = this.cryptoFns.getRandomString(10)
     const cryptoData: CryptoData = {
       asym: { publicKey, secretKey },
       sym: { key, salt },
@@ -42,7 +36,7 @@ export class CryptoService {
   }
 
   public login(loginData: LoginData, encryptedUser: EncryptedUser): DetailedUser {
-    const key = deriveSymmetricKeyFromPassword(loginData.password, encryptedUser.passwordSalt)
+    const key = this.cryptoFns.deriveSymmetricKeyFromPassword(loginData.password, encryptedUser.passwordSalt)
     const crypto = decryptCryptoData(this.cryptoFns, encryptedUser.encrypted, key)
     const detailedUser: DetailedUser = {
       id: encryptedUser.id,
@@ -53,7 +47,7 @@ export class CryptoService {
   }
 
   public createPackage(secret: Secret, user: DetailedUser): EncryptedSecret {
-    const secretKey = createSymmetricKey()
+    const secretKey = this.cryptoFns.createSymmetricKey()
     const encSecret = this.cryptoFns.encryptObjSymmetric(secret, secretKey)
     const encSecretKey = this.cryptoFns.encryptBytesSymmetric(secretKey, user.crypto.sym.key)
     const keyTable: KeyTable = {

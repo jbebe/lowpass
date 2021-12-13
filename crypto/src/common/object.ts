@@ -1,20 +1,20 @@
 import { FlatObject } from './type'
 
 const serializeJson = (key: unknown, value: unknown) => {
-  // the replacer function is looking for some typed arrays.
-  // If found, it replaces it by a trio
-  if (
-    value instanceof Int8Array ||
-    value instanceof Uint8Array ||
-    value instanceof Uint8ClampedArray ||
-    value instanceof Int16Array ||
-    value instanceof Uint16Array ||
-    value instanceof Int32Array ||
-    value instanceof Uint32Array ||
-    value instanceof Float32Array ||
-    value instanceof Float64Array
-  ) {
-    return Array.from(value)
+  if (value instanceof Uint8Array) {
+    return {
+      type: Uint8Array.name,
+      value: Array.from(value),
+    }
+  }
+  return value
+}
+
+const deserializeJson = (key: string, value: unknown) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const uint8Type = value as any
+  if (uint8Type?.type === Uint8Array.name) {
+    return new Uint8Array(uint8Type.value)
   }
   return value
 }
@@ -23,8 +23,8 @@ export function encodeJson(obj: object): string {
   return JSON.stringify(obj, serializeJson)
 }
 
-export function decodeJson(str: string): object {
-  return JSON.parse(str)
+export function decodeJson<T>(str: string): T {
+  return JSON.parse(str, deserializeJson) as T
 }
 
 export function createMap<T>(array: T[], selectKey: (key: T) => string): FlatObject<T> {

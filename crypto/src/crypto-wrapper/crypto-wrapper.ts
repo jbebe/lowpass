@@ -1,22 +1,25 @@
 import NaCl from 'tweetnacl'
 import { UserPubKey } from '../types/user'
 
+export const AsymmetricNonceLength = NaCl.box.nonceLength
+export const SymmetricNonceLength = NaCl.secretbox.nonceLength
+export const SymmetricKeyLength = NaCl.secretbox.keyLength
+
 export interface IBaseCryptoWrapper {
   // base functions
   encryptSymmetric(secret: Uint8Array, nonce: Uint8Array, key: Uint8Array): Uint8Array
   decryptSymmetric(data: Uint8Array, nonce: Uint8Array, key: Uint8Array): Uint8Array
-  decryptAsymmetric(message: Uint8Array, nonce: Uint8Array, theirPubKey: Uint8Array, ownSecKey: Uint8Array): Uint8Array
-  encryptAsymmetric(message: Uint8Array, nonce: Uint8Array, theirPubKey: Uint8Array, ownSecKey: Uint8Array): Uint8Array
+  decryptAsymmetric(secret: Uint8Array, nonce: Uint8Array, theirPubKey: Uint8Array, ownSecKey: Uint8Array): Uint8Array
+  encryptAsymmetric(secret: Uint8Array, nonce: Uint8Array, theirPubKey: Uint8Array, ownSecKey: Uint8Array): Uint8Array
 
   // helpers
+  getRandomBytes(length: number): Uint8Array
   createAsymmetricKeyPair(asymSecretKey?: Uint8Array): UserPubKey
+  getHash(input: Uint8Array): Uint8Array
 }
 
 export class NaClCryptoWrapper implements IBaseCryptoWrapper {
-  /**
-   * Create asymmetric keypair
-   * Optionally created from asymmetric secret key
-   */
+  // Assymmetric
   public createAsymmetricKeyPair(asymSecretKey?: Uint8Array): UserPubKey {
     let keyPair: NaCl.BoxKeyPair
     if (asymSecretKey) {
@@ -66,6 +69,8 @@ export class NaClCryptoWrapper implements IBaseCryptoWrapper {
     return secret
   }
 
+  // Symmetric
+
   private validateSym(nonce: Uint8Array, key: Uint8Array) {
     if (nonce.byteLength !== NaCl.secretbox.nonceLength) {
       throw new RangeError(`Nonce must be ${NaCl.secretbox.nonceLength} bytes long`)
@@ -87,5 +92,15 @@ export class NaClCryptoWrapper implements IBaseCryptoWrapper {
       throw new TypeError('Unable to decrypt secret with given parameters')
     }
     return secret
+  }
+
+  // Utils
+
+  public getRandomBytes(length: number): Uint8Array {
+    return NaCl.randomBytes(length)
+  }
+
+  public getHash(input: Uint8Array): Uint8Array {
+    return NaCl.hash(input)
   }
 }

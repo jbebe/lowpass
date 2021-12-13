@@ -1,4 +1,3 @@
-import { mapEncryptedToUser } from '../helpers/mappers'
 import { IApiService } from '../types/api'
 import { EncryptedSecret } from '../types/package'
 import { SecretInvite, UserSecretPair } from '../types/secret'
@@ -57,7 +56,7 @@ export class MockApiService implements IApiService {
     if (!user) {
       throw new Error('There is no user with this email')
     }
-    return mapEncryptedToUser(user)
+    return user
   }
 
   public async updateSecretAsync(secret: EncryptedSecret): Promise<void> {

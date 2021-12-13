@@ -1,4 +1,4 @@
-import { CryptoFunctions } from '../crypto-wrapper/crypto-functions'
+import { CryptoFunctions } from './crypto-functions'
 import { Secret } from '../types/secret'
 import { CryptoData, EncryptedObject } from '../types/user'
 

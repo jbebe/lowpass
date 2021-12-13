@@ -1,5 +1,4 @@
 import { CryptoFunctions } from '../src/crypto-wrapper/crypto-functions'
-import { getRandomString } from '../src/helpers/random'
 import { AccountService } from '../src/services/account-service'
 import { Application } from '../src/services/application'
 import { CryptoService } from '../src/services/crypto-service'
@@ -19,8 +18,8 @@ test('Full test', async () => {
 
   const createUserAsync = async () => {
     const loginData: LoginData = {
-      email: `test+${getRandomString(5)}@lowpass.local`,
-      password: getRandomString(5),
+      email: `test+${cryptoFns.getRandomString(5)}@lowpass.local`,
+      password: cryptoFns.getRandomString(5),
     }
     await Application.registerAsync(loginData, accountService)
 
@@ -36,9 +35,9 @@ test('Full test', async () => {
   expect(secretsApp1.length).toBe(0)
 
   // Create secret x2
-  const secretOnly1App1 = createTestSecret()
+  const secretOnly1App1 = createTestSecret(cryptoFns)
   await app1.createSecretAsync(secretOnly1App1)
-  const secretOnly2App1 = createTestSecret()
+  const secretOnly2App1 = createTestSecret(cryptoFns)
   await app1.createSecretAsync(secretOnly2App1)
 
   // Get all secrets
